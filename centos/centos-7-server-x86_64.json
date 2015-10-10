@@ -1,0 +1,51 @@
+{
+  "variables": {
+    "name":                 "centos-7-server-x86_64",
+    "user":                 "vagrant",
+    "password":             "vagrant",
+    "size":                 "10000"
+  },
+
+  "builders": [
+    {
+      "name":               "{{user `name`}}",
+      "type":               "qemu",
+      "format":             "qcow2",
+      "accelerator":        "kvm",
+
+      "disk_size":          "{{user `size`}}",
+      "disk_interface":     "virtio",
+
+      "iso_url":            "http://mirror.karneval.cz/pub/centos/7/isos/x86_64/CentOS-7-x86_64-Minimal-1503-01.iso",
+      "iso_checksum":       "d07ab3e615c66a8b2e9a50f4852e6a77",
+      "iso_checksum_type":  "md5",
+
+      "http_directory":     "remote",
+
+      "ssh_username":       "{{user `user`}}",
+      "ssh_password":       "{{user `password`}}",
+      "ssh_port":           22,
+      "ssh_wait_timeout":   "10m",
+
+      "shutdown_command":   "echo '{{user `password`}}'|sudo -S shutdown -P now",
+
+      "boot_wait":          "5s",
+      "boot_command": [
+        "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/{{user `name`}}-ks.cfg<enter><wait>"
+      ],
+
+      "output_directory":   "boxes"
+    }
+  ],
+
+  "provisioners": [
+
+  ],
+
+  "post-processors": [
+    {
+      "keep_input_artifact":    false,
+      "type":                   "vagrant"
+    }
+  ]
+}
