@@ -1,11 +1,11 @@
 {
   "variables": {
-    "name":                 "centos-7-server-x86_64",
+    "name":                 "centos-6-server-x86_64",
     "user":                 "vagrant",
     "password":             "vagrant",
     "size":                 "10000",
-    "mirror":               "http://mirror.karneval.cz/pub/centos/7/isos/x86_64/CentOS-7-x86_64-NetInstall-1503.iso",
-    "md5sum":               "111379a06402e1e445c6aeee9401d031"
+    "mirror":               "http://mirror.karneval.cz/pub/centos/6/isos/x86_64/CentOS-6.7-x86_64-netinstall.iso",
+    "md5sum":               "171ce654ec06040d096daf75934ca8ca"
   },
 
   "builders": [
