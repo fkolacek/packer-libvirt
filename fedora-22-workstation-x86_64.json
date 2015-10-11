@@ -1,0 +1,60 @@
+{
+  "variables": {
+    "name":                 "fedora-22-workstation-x86_64",
+    "user":                 "vagrant",
+    "password":             "vagrant",
+    "size":                 "10000",
+    "mirror":               "https://download.fedoraproject.org/pub/fedora/linux/releases/22/Workstation/x86_64/iso/Fedora-Workstation-netinst-x86_64-22.iso",
+    "md5sum":               "9687469cf8519101cf3b393bff92474b"
+  },
+
+  "builders": [
+    {
+      "name":               "{{user `name`}}",
+      "type":               "qemu",
+      "format":             "qcow2",
+      "accelerator":        "kvm",
+
+      "disk_size":          "{{user `size`}}",
+      "disk_interface":     "virtio",
+
+      "iso_url":            "{{user `mirror`}}",
+      "iso_checksum":       "{{user `md5sum`}}",
+      "iso_checksum_type":  "md5",
+
+      "http_directory":     "data",
+
+      "ssh_username":       "{{user `user`}}",
+      "ssh_password":       "{{user `password`}}",
+      "ssh_port":           22,
+      "ssh_wait_timeout":   "30m",
+
+      "shutdown_command":   "echo '{{user `password`}}'|sudo -S shutdown -P now",
+
+      "boot_wait":          "5s",
+      "boot_command": [
+        "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/{{user `name`}}-ks.cfg<enter><wait>"
+      ]
+    }
+  ],
+
+  "provisioners": [
+    {
+      "type":               "shell",
+      "execute_command":    "echo '{{user `password`}}' | {{.Vars}} sudo -E -S bash '{{.Path}}'",
+      "scripts": [
+        "data/provision.sh"
+      ]
+    }
+  ],
+
+  "post-processors": [
+    {
+      "type":                   "vagrant",
+      "output":                 "boxes/{{user `name`}}.box",
+      "include": [
+        "data/Vagrantfile.spec"
+      ]
+    }
+  ]
+}
