@@ -1,0 +1,60 @@
+{
+  "variables": {
+    "name":                 "rhel-6-server-x86_64",
+    "user":                 "vagrant",
+    "password":             "vagrant",
+    "size":                 "10000",
+    "mirror":               "http://download.example.com/RHEL-6/6.7/Server/x86_64/iso/RHEL-6.7-20150702.0-Server-x86_64-boot.iso",
+    "md5sum":               "bb9b82ae4e82d7fa821b1e5161e2ecab"
+  },
+
+  "builders": [
+    {
+      "name":               "{{user `name`}}",
+      "type":               "qemu",
+      "format":             "qcow2",
+      "accelerator":        "kvm",
+
+      "disk_size":          "{{user `size`}}",
+      "disk_interface":     "virtio",
+
+      "iso_url":            "{{user `mirror`}}",
+      "iso_checksum":       "{{user `md5sum`}}",
+      "iso_checksum_type":  "md5",
+
+      "http_directory":     "data",
+
+      "ssh_username":       "{{user `user`}}",
+      "ssh_password":       "{{user `password`}}",
+      "ssh_port":           22,
+      "ssh_wait_timeout":   "10m",
+
+      "shutdown_command":   "echo '{{user `password`}}'|sudo -S shutdown -P now",
+
+      "boot_wait":          "5s",
+      "boot_command": [
+        "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/{{user `name`}}-ks.cfg<enter><wait>"
+      ]
+    }
+  ],
+
+  "provisioners": [
+    {
+      "type":               "shell",
+      "execute_command":    "echo '{{user `password`}}' | {{.Vars}} sudo -E -S bash '{{.Path}}'",
+      "scripts": [
+        "data/provision.sh"
+      ]
+    }
+  ],
+
+  "post-processors": [
+    {
+      "type":                   "vagrant",
+      "output":                 "boxes/{{user `name`}}.box",
+      "include": [
+        "data/Vagrantfile.spec"
+      ]
+    }
+  ]
+}
